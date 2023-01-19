@@ -7,24 +7,120 @@
 </head>
 
 <body>
-  <input id="cardnumber"></input>
+  <input id="cardnumber" maxlength="16" onkeypress="return onlyNumbers(event)"></input>
   <button onclick="validate()">Validar</button>
   <div id="result"></div>
   <script lang="javascript">
+
+    function onlyNumbers(e){
+      key = e.keyCode || e.which;
+      keyboard = String.fromCharCode(key);
+      numbers = "0123456789";
+      specials = "8-37-38-46";
+      special_keyboard = false;
+
+      for(var i in specials){
+        if(key == specials[i]){
+          special_keyboard = true;
+        }        
+      }
+
+      if(numbers.indexOf(keyboard) == -1 && !special_keyboard){
+        return false;
+      }
+    }
+    
     function validate() {
-      const valid = isValid(document.getElementById("cardnumber").value)
+      const valid = isValid(document.getElementById("cardnumber").value);
+      
       if (valid) {
         // Show success in div#result
+        document.getElementById("result").innerHTML = ("Su tarjeta es válida");
+          //console.log("if");
       }
       else {
         // Show error message in div#result
+        document.getElementById("result").innerHTML = ("Su tarjeta no es válida");
+          //console.log("else");
       }
     }
 
     function isValid(creditCardNumber){
       // is creditCardNumber valid?
-      return false
+      noData = isEmpty(creditCardNumber);
+      if (noData){
+        return false
+      }
+      validNumber = isValidCardNumber(creditCardNumber);
+      return validNumber       
     }
+
+    function isEmpty(creditCardNumber){
+      if (creditCardNumber == "" || creditCardNumber == null){
+        alert("Campo vacio. Por favor introduzaca su número de tarjeta");
+        return true;      
+      }
+      return false;      
+    }
+
+    function isValidCardNumber(creditCardNumber){
+      //crear array en reversa
+      reversedNumber = reverseArray(creditCardNumber);
+      //multiplicar elemento con indice impar por 2
+      multiplicationOddIndexes = multiplyOddIndexByTwo(reversedNumber);
+      //suma numeros del array
+      sumOfNumbers = addNumbers(multiplicationOddIndexes);
+      //verificación
+      validation = check(sumOfNumbers)
+        //console.log(sumOfNumbers);
+        //console.log(validation);
+      return validation
+    }
+
+    function reverseArray(creditCardNumber){
+      let arr = creditCardNumber.split('');
+      let rev = arr.reverse();
+      return rev            
+    }
+
+    function multiplyOddIndexByTwo(anyArray){
+      let new_arr = [];
+      for (let i = 0; (i < anyArray.length); ++i) {                  
+        if (i % 2 === 0) {
+          let odd = Number(anyArray[i]) * 1;
+          new_arr.push(odd);          
+        }
+        else {
+          let even = Number(anyArray[i]) * 2;
+            //sumar 2 digitos 
+          y = addDigits(even)         
+          new_arr.push(y);
+        }        
+      }
+      return new_arr
+    }
+   
+    function addDigits(x){
+      d = Math.floor(x/10)
+        //console.log(d)
+      r = x%10
+      return (d + r)
+    }
+
+    function addNumbers(anyArray){
+      let total = anyArray.reduce(function(a,b){return a + b;})
+      return total
+    }
+
+    function check(anyArray){
+        if ((anyArray%10) === 0) {
+          return true
+        }
+        else {
+          return false
+        }
+    }
+
   </script>
 </body>
 
